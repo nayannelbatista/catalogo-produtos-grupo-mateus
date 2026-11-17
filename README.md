@@ -168,22 +168,120 @@ A proposta é identificar quais características e comportamentos poderiam ser r
 
 O exercício foi proposto para reflexão e aplicação dos conceitos de POO, não fazendo parte da implementação atual do projeto.
 
+## Aula 4 - 12/11 — Introdução ao TypeScript
+
+Nesta etapa, o catálogo foi adaptado de JavaScript para TypeScript, mantendo a consulta de produtos e a simulação de cadastro com a API DummyJSON.
+
+### Objetivo
+
+Compreender os conceitos iniciais de TypeScript e aplicá-los ao código existente, utilizando tipos para representar os dados dos produtos, os elementos da página e os retornos das funções.
+
+### Conceitos trabalhados
+
+- **Tipagem explícita:** definição de tipos como `string` e `number` para atributos, parâmetros e variáveis.
+- **Tipos de retorno:** utilização de `string`, `void` e `Promise<void>` nos métodos e funções.
+- **Alias de tipo:** criação de `DadosProduto` com `type` para representar os dados utilizados na comunicação com a API.
+- **Arrays tipados:** utilização de `DadosProduto[]` e `Produto[]` para representar coleções de produtos.
+- **Enum:** criação de `EstadoConsulta` para representar os estados de carregamento, conclusão e erro da consulta.
+- **Tipagem de elementos do DOM:** utilização de `as` com tipos como `HTMLButtonElement`, `HTMLInputElement` e `HTMLFormElement`. Essa afirmação de tipo orienta o compilador, mas não verifica a existência dos elementos durante a execução.
+- **Tipagem de eventos:** utilização de `Event` no parâmetro da função de envio do formulário.
+- **Verificação de erros:** utilização de `instanceof Error` antes de acessar a mensagem de erro no envio de produtos.
+- **Módulos:** organização do código com `export`, `import` e `import type`.
+- **Compilação:** transformação dos arquivos TypeScript em JavaScript para execução no navegador.
+
+### Implementação
+
+#### 1. Classe Produto e tipo DadosProduto
+
+A classe foi movida para o arquivo `Produto.ts`, com atributos, parâmetros e retornos tipados. O mesmo arquivo exporta o tipo utilizado para representar os produtos da API:
+
+```typescript
+export type DadosProduto = {
+  title: string;
+  price: number;
+};
+```
+
+Os métodos `formatar()` e `validar()` retornam `string`, enquanto `paraAPI()` retorna `DadosProduto`. A validação do nome utiliza `trim()` para identificar valores compostos apenas por espaços.
+
+#### 2. Adaptação da aplicação
+
+O arquivo `app.ts` substitui o antigo `app.js` e importa a classe e o tipo:
+
+```typescript
+import { Produto, type DadosProduto } from './Produto.js';
+```
+
+A extensão `.js` corresponde ao módulo gerado pela compilação e utilizado pelo navegador.
+
+A consulta passou a solicitar seis produtos, com as propriedades `title` e `price`. Os dados recebidos são representados por `DadosProduto[]` e utilizados para preencher um array de instâncias de `Produto` antes da exibição na página.
+
+O enum `EstadoConsulta` e a função `mostrarMensagemConsulta()` centralizam as mensagens de carregamento, sucesso e erro. As funções assíncronas de consulta e envio possuem retorno `Promise<void>`.
+
+O envio continua utilizando `validar()` e `paraAPI()`. No tratamento de erros, `instanceof Error` permite acessar `erro.message`; para outros valores, é exibida uma mensagem de erro desconhecido.
+
+A tipagem dos dados recebidos da API descreve o formato esperado pelo código, mas não realiza validação da resposta durante a execução.
+
+#### 3. Configuração e estrutura
+
+- `Produto.ts`: classe `Produto` e tipo `DadosProduto`.
+- `app.ts`: interação com a página, consulta e envio de produtos.
+- `tsconfig.json`: configuração do compilador, incluindo os dois arquivos TypeScript.
+- `package.json`: dependência de desenvolvimento do TypeScript e comandos `build` e `watch`.
+- `package-lock.json`: registro das versões das dependências para instalação reproduzível.
+- `.gitignore`: exclusão de dependências instaladas, arquivos compilados, logs do npm e arquivos locais do macOS do versionamento.
+- `dist/`: pasta de saída dos arquivos JavaScript gerados pela compilação.
+
+O `tsconfig.json` utiliza `target` e `module` como `ES2020`, resolução de módulos `Bundler`, diretório de origem `.` e saída em `dist`. A opção `strict` habilita a verificação estrita de tipos, `noEmitOnError` impede a geração dos arquivos quando há erros de compilação e `skipLibCheck` dispensa a verificação dos arquivos de declaração das bibliotecas.
+
+O `index.html` passou a identificar TypeScript no título da página e carregar o JavaScript compilado como módulo:
+
+```html
+<script type="module" src="dist/app.js"></script>
+```
+
 ## Tecnologias utilizadas
 
 - HTML5
 - CSS3
 - JavaScript
+- TypeScript
+- Node.js e npm (instalação e compilação)
 - Fetch API
 - API DummyJSON
 
 ## Como executar
 
-1. Abra a pasta do projeto no VS Code.
-2. Abra o arquivo `index.html` utilizando o Live Server.
-3. Mantenha conexão com a internet para acessar a API.
-4. Utilize os botões de consulta e envio para testar as funcionalidades.
+Na etapa anterior, em JavaScript, não era necessário instalar dependências com npm. Com a introdução do TypeScript, é necessário ter Node.js e npm instalados para compilar o código.
 
-O projeto não exige backend próprio, framework ou instalação de dependências com npm.
+1. Abra a pasta do projeto no VS Code.
+2. No terminal, na raiz do projeto, instale as dependências:
+
+   ```bash
+   npm ci
+   ```
+
+3. Compile os arquivos TypeScript:
+
+   ```bash
+   npm run build
+   ```
+
+4. Abra o arquivo `index.html` utilizando o Live Server, para servir a página e os módulos JavaScript por HTTP.
+5. Mantenha conexão com a internet para acessar a API.
+6. Utilize os botões de consulta e envio para testar as funcionalidades.
+
+Durante o desenvolvimento, é possível recompilar automaticamente ao salvar alterações nos arquivos TypeScript:
+
+```bash
+npm run watch
+```
+
+O comando `watch` acompanha as alterações e gera os arquivos em `dist/`; o Live Server continua responsável por servir a página. O navegador executa os arquivos JavaScript gerados, por isso a compilação deve ocorrer antes de testar a aplicação.
+
+O projeto não exige backend próprio ou framework.
+
+A pasta `node_modules/`, a saída gerada em `dist/` e arquivos do sistema como `.DS_Store` não devem ser incluídos no versionamento. Os arquivos `package.json`, `package-lock.json` e `tsconfig.json` fazem parte da configuração do projeto.
 
 ## Observações
 

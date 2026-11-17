@@ -1,0 +1,11 @@
+# Dependências instaladas pelo npm
+node_modules/
+
+# JavaScript gerado pela compilação do TypeScript
+/dist/
+
+# Logs locais do npm
+npm-debug.log*
+
+# Arquivos locais do macOS
+.DS_Store
